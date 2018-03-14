@@ -5,7 +5,7 @@ embed is_it in your crontab entry e.g.:\
 1   0  *  *   *   [ "is_it -c f -d mon" ] && logger "It's 12:01AM on the first Monday of the month"\
 (is_it must be in the path or provide the full path in the crontab line)
 
-Usage: is_it -c count -d day\
+Usage: is_it -c count -d day [-v]\
   -c, --count   recurrence count of the month e.g. "f" or "first", "l" or "last", 1,2,3,4,5\
                 multiple entries can be listed as a sequential range e.g. 1-3 or a non-spaced comma separated list e.g. 2,4\
   -d, --day     day of the month e.g. 1 to 7 (Sunday to Monday), "Mo," "Mon," "Monday" (case insensitive)\
