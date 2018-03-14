@@ -9,7 +9,8 @@ Usage: is_it -c count -d day\
   -c, --count   recurrence count of the month e.g. "f" or "first", "l" or "last", 1,2,3,4,5\
                 multiple entries can be listed as a sequential range e.g. 1-3 or a non-spaced comma separated list e.g. 2,4\
   -d, --day     day of the month e.g. 1 to 7 (Sunday to Monday), "Mo," "Mon," "Monday" (case insensitive)\
-                multiple entries can be listed as a sequential range e.g. tue-thu or a non-spaced comma separated list e.g. mo,we
+                multiple entries can be listed as a sequential range e.g. tue-thu or a non-spaced comma separated list e.g. mo,we\
+  -v, --verbose STDOUT notice e.g. "it is not the last thursday of the month" (default is silent)
 
   examples:\
     is_it -c first -d mon       # first Monday of the month\
