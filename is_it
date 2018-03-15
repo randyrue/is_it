@@ -2,8 +2,8 @@
 ###########################################################################
 # Application:  is_it
 # Function:     wrapper/qualifier for crontab entries,
-#               tests for date conditions like "first Monday" and returns exit status
-# Author(s):    Randy Rue
+#               tests for date conditions like "first Monday"
+#               and returns exit status
 ###########################################################################
 #load the required modules
 import sys, string, calendar, time, datetime
@@ -11,10 +11,17 @@ import sys, string, calendar, time, datetime
 def main():
     """ main entry point; only called if __main__ """
     
+    global weekday_strings, month_strings, count_strings
+    weekday_strings = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    # blank [0] entry lets us count up from 1
+    month_strings = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    count_strings = ["", "first", "second", "third", "fourth", "fifth", "last"]
+    
     # get args crudely
     verbose = False
     testing = False
-    for i in range(1,len(sys.argv)-1):
+    foo = sys.argv
+    for i in range(1,len(sys.argv)):
         if sys.argv[i] == "-c" or sys.argv[i] == "--count":
             count = sys.argv[i+1]
             continue
@@ -38,7 +45,8 @@ def main():
     this_year = now.year
     this_month = now.month
     this_day = now.day
-    this_weekday = ((now.weekday()+9)%7) # hinky math converts datetime's weekday 0-6 integer range of monday-sunday to our range of sunday-monday. good times.
+    #this_weekday = ((now.weekday()+9)%7) # hinky math converts datetime's weekday 0-6 integer range of monday-sunday to the cron standard range of sunday-monday. good times.
+    this_weekday = (now.weekday()+1)%7
     days_in_month = days_this_month(this_year,this_month)
     
     # parse/check args
@@ -52,7 +60,7 @@ def main():
             print "counts range must be increasing, if you're looping use a comma separated list"
             usage()
         for c in counts:
-            if c > 5: usage("invalid count value")
+            if c < 1 or c > 6: usage("invalid count value")
         counts = range(counts[0],counts[1]+1)
     elif "," in count:
         # it's a list
@@ -86,47 +94,88 @@ def main():
         weekdays.sort()
     else: weekdays = [get_weekday(weekday)] # it's a single value
             
-    
-    
-    weekday_strings = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
     # walk a nested loop of the argument conditions and see if any apply
     for c in counts:
         for w in weekdays:
-            # is this the c'th weekday of the month?
-            
-            print "foo"
+            # is today even the weekday we're looking for?
+            if w != this_weekday:
+                nope(c,w,this_month,verbose)
+                break
+            # we're looking for the last weekday
+            if c == 6:
+                if this_day > days_in_month-7:
+                    yep(c,w,this_month,verbose)
+            #otherwise, is this the c'th weekday 'w' of the month?
+            else:
+                this_week = week_of_month(now)
+                if c == this_week:
+                    yep(c,w,this_month,verbose)
+                
+    print "no conditions matched"
+    sys.exit(1)
             
     
-    
+def nope(c,w,m,verbose):
+    if verbose == True:
+        print "This is not the %s %s in %s" % (count_strings[c], weekday_strings[w], month_strings[m])
+
+def yep(c,w,m,verbose):
+    if verbose == True:
+        print "This is the %s %s in %s" % (count_strings[c], weekday_strings[w], month_strings[m])
+        print "conditions match"
+    sys.exit(0)
+
 def usage(doh=""):
     if doh != "": print "%s\n" % doh
     print "usage: is_it -c count -w weekday [-v] [-y YYYYMMDD]"
     print "where:"
     print "\t-c, --count recurrence count of the month e.g. \"f\" or \"first\", \"l\" or \"last\", 1,2,3,4,5"
     print "\tmultiple entries can be listed as a sequential range e.g. 1-3 or a non-spaced comma separated list e.g. 2,4"
-    print "\t-w, --weekday weekday of the month e.g. 1 to 7 (Sunday to Monday), \"Mo,\" \"Mon,\" \"Monday\" (case insensitive)"
+    print "\t-w, --weekday day of the week e.g. 0 to 6 (Sunday to Saturday), \"Mo,\" \"Mon,\" \"Monday\" (case insensitive)"
     print "\tmultiple entries can be listed as a sequential range e.g. tue-thu or a non-spaced comma separated list e.g. mo,we"
     print "\t-v, --verbose  echos output e.g \"it is not the last thursday of the month\" (default is silent)"
     print "\t-t, --test  pretends today is YYYY-MM-DD for testing purposes"
     sys.exit(1)
 
 def get_weekday(weekday):
-    if "su" in weekday.lower(): return 1
-    elif "mo" in weekday.lower(): return 2
-    elif "tu" in weekday.lower(): return 3
-    elif "we" in weekday.lower(): return 4
-    elif "th" in weekday.lower(): return 5
-    elif "fr" in weekday.lower(): return 6
-    elif "sa" in weekday.lower(): return 7
+    if "su" in weekday.lower(): return 0
+    elif "mo" in weekday.lower(): return 1
+    elif "tu" in weekday.lower(): return 2
+    elif "we" in weekday.lower(): return 3
+    elif "th" in weekday.lower(): return 4
+    elif "fr" in weekday.lower(): return 5
+    elif "sa" in weekday.lower(): return 6
     else: return int(weekday)
 
 def get_count(count, now):
     if "f" in count.lower(): return 1
     elif "l" in count:
-        return int(days_this_month(now.year, now.month)+1/7.0)
+        #return int((days_this_month(now.year, now.month)+1)/7.0)
+        return 6 # secret code for the last week
     else: return int(count)
 
 def days_this_month(yr=datetime.datetime.now().year, mth=datetime.datetime.now().month):
     return calendar.monthrange(yr, mth)[1]
+
+def week_of_month(dt):
+    """Determines the week (number) of the month"""
+    #Calendar object. 6 = Start on Sunday, 0 = Start on Monday
+    cal_object = calendar.Calendar(6)
+    month_calendar_dates = cal_object.itermonthdates(dt.year,dt.month)
+    day_of_week = 1
+    week_number = 1
+
+    for day in month_calendar_dates:
+        #add a week and reset day of week
+        if day_of_week > 7:
+            week_number += 1
+            day_of_week = 1
+        if dt.day == day.day:
+            break
+        else:
+            day_of_week += 1
+
+    return week_number
 
 if __name__ == '__main__': main()
