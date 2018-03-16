@@ -17,11 +17,15 @@ def main():
     month_strings = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     count_strings = ["", "first", "second", "third", "fourth", "fifth", "last"]
     
+    if len(sys.argv) < 5: usage()
+    
     # get args crudely
     verbose = False
     testing = False
     foo = sys.argv
     for i in range(1,len(sys.argv)):
+        if sys.argv[i] == "-h" or sys.argv[i] == "--help":
+            usage()
         if sys.argv[i] == "-c" or sys.argv[i] == "--count":
             count = sys.argv[i+1]
             continue
@@ -128,14 +132,18 @@ def yep(c,w,m,verbose):
 
 def usage(doh=""):
     if doh != "": print "%s\n" % doh
-    print "usage: is_it -c count -w weekday [-v] [-y YYYYMMDD]"
-    print "where:"
-    print "\t-c, --count recurrence count of the month e.g. \"f\" or \"first\", \"l\" or \"last\", 1,2,3,4,5"
-    print "\tmultiple entries can be listed as a sequential range e.g. 1-3 or a non-spaced comma separated list e.g. 2,4"
-    print "\t-w, --weekday day of the week e.g. 0 to 6 (Sunday to Saturday), \"Mo,\" \"Mon,\" \"Monday\" (case insensitive)"
-    print "\tmultiple entries can be listed as a sequential range e.g. tue-thu or a non-spaced comma separated list e.g. mo,we"
-    print "\t-v, --verbose  echos output e.g \"it is not the last thursday of the month\" (default is silent)"
-    print "\t-t, --test  pretends today is YYYY-MM-DD for testing purposes"
+    print "\nUsage: is_it -c count -w weekday [-v] [-t YYYYMMDD] [-h]"
+    print "Test whether this is the \"c\'th\" weekday \"w\" of the month.\n"
+    print "\t-c, --count \trecurrence count of the month e.g. \"f\" or \"first\",\n\t\t\t\"l\" or \"last\", 1,2,3,4,5"
+    print "\t\t\tmultiple entries can be listed as a sequential range\n\t\t\te.g. 1-3 or a non-spaced comma separated list e.g. 2,4"
+    print "\t-w, --weekday \tday of the week e.g. 0 to 6 (Sunday to Saturday),\n\t\t\t\"Mo,\" \"Mon,\" \"Monday\" (case insensitive)"
+    print "\t\t\tmultiple entries can be listed as a sequential range\n\t\t\te.g. tue-thu or a non-spaced comma separated list e.g. mo,we"
+    print "\t-v, --verbose  \techos output e.g \"it is not the last thursday\n\t\t\tof the month\" (default is silent)"
+    print "\t-t, --test  \tpretends today is YYYY-MM-DD for testing purposes"
+    print "\t-h, --help \tdisplays this help and exit\n"
+    print "Exit status:"
+    print "\t0\tdate test is positive"
+    print "\t1\tdate test is negative or is_it otherwise failed"
     sys.exit(1)
 
 def get_weekday(weekday):
