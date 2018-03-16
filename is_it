@@ -116,7 +116,7 @@ def main():
                 if c == this_week:
                     yep(c,w,this_month,verbose)
                 
-    print "no conditions matched"
+    if verbose == True: print "no conditions matched"
     sys.exit(1)
             
     
