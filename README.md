@@ -6,7 +6,7 @@ embed is_it in your crontab entry e.g.:\
 1   0  *  *   *   [ "is_it -c f -d mon" ] && logger "It's 12:01AM on the first Monday of the month"\
 (is_it must be in the path or provide the full path in the crontab line)
 
-Usage: is_it -c count -w weekday [-v] [-y YYYYMMDD]\
+Usage: is_it -c count -w weekday [-v] [-t YYYYMMDD] [-h]\
 Test whether this is the "c'th" weekday "w" of the month.
 
    -c, --count     recurrence count of the month e.g. "f" or "first", "l" or "last", 1,2,3,4,5\
