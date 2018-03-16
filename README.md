@@ -9,16 +9,11 @@ embed is_it in your crontab entry e.g.:\
 Usage: is_it -c count -w weekday [-v] [-y YYYYMMDD]\
 Test whether this is the "c'th" weekday "w" of the month.
 
-   -c, --count     recurrence count of the month e.g. "f" or "first",\
-                   "l" or "last", 1,2,3,4,5\
-                   multiple entries can be listed as a sequential range\
-                   e.g. 1-3 or a non-spaced comma separated list e.g. 2,4\
-   -w, --weekday   day of the week e.g. 0 to 6 (Sunday to Saturday),\
-                   "Mo," "Mon," "Monday" (case insensitive)\
-                   multiple entries can be listed as a sequential range\
-                   e.g. tue-thu or a non-spaced comma separated list e.g. mo,we\
-   -v, --verbose   echos output e.g "it is not the last thursday\
-                   of the month" (default is silent)\
+   -c, --count     recurrence count of the month e.g. "f" or "first", "l" or "last", 1,2,3,4,5\
+                   multiple entries can be listed as a sequential range e.g. 1-3 or a non-spaced comma separated list e.g. 2,4\
+   -w, --weekday   day of the week e.g. 0 to 6 (Sunday to Saturday), "Mo," "Mon," "Monday" (case insensitive)\
+                   multiple entries can be listed as a sequential range e.g. tue-thu or a non-spaced comma separated list e.g. mo,we\
+   -v, --verbose   echos output e.g "it is not the last thursday of the month" (default is silent)\
    -t, --test      pretends today is YYYY-MM-DD for testing purposes\
    -h, --help      displays this help and exit
 
